@@ -15,7 +15,7 @@
 	variables.defaultModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
 </cfscript>
 
-<cf_sparql name="qAllTriples" model="#variables.defaultModel#">
+<cf_sparql name="qAllTriples" model="#variables.defaultModel#" debug="true">
 				
 		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
 		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
