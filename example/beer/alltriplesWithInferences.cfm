@@ -6,10 +6,10 @@
 <body>
 
 <cfscript>
-	// Read in Wine Ontology
-	variables.wineOntology = fileRead(application.properties.ontologyLibraryFolder & "/beer.owl");
+	// Read in Beer Ontology
+	variables.beerOntology = fileRead(application.properties.ontologyLibraryFolder & "/beer.owl");
 	variables.ontoByteStream = createObject("java", "java.io.ByteArrayInputStream")
-																		.init(variables.wineOntology.getBytes());			
+																		.init(variables.beerOntology.getBytes());			
 	
 	variables.defaultModel = application.util.modelFactory.getModel();
 
