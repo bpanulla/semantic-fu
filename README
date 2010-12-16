@@ -1,0 +1,10 @@
+Semantic-Fu
+
+ColdFusion custom tags and components for building Semantic Web applications.
+
+Place the project src folder on your custom tag path in your ColdFusion Server or
+application.
+
+You'll also need to have the Jena Semantic Web framework, and optionally the Pellet
+reasoner library, on your ColdFusion server Java CLASSPATH. See README-Jena.txt for
+tips.
