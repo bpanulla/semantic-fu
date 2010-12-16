@@ -1,3 +1,4 @@
+<cfsetting showdebugoutput="false">
 <html>
 <head>
 	<title>SPARQL Examples</title>
@@ -8,8 +9,9 @@
 <ul>
 	<li><a href="alltriples.cfm">All Triples</a></li>
 	<li><a href="alltriplesWithInferences.cfm">All Triples, with inferences</a></li>
+	<li><a href="subclasses.cfm">Beer Types</a></li>
+	<li><a href="withInferences.cfm">Beer Types, with inferences</a></li>
 	<li><a href="instances.cfm">Beers</a></li>
-	<li><a href="withInferences.cfm">Beers, with inferences</a></li>
 </ul>
 
 </body>

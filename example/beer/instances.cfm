@@ -12,19 +12,29 @@
 																		.init(variables.beerOntology.getBytes());			
 	
 	variables.defaultModel = application.util.modelFactory.getModel();
-	variables.defaultModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
+	
+	variables.infModel = application.util.modelFactory.getReasoningModel(
+							application.properties.infLevel,
+							variables.defaultModel);
+							
+	variables.infModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
+
 </cfscript>
 
-<cf_sparql name="qInstances" model="#variables.defaultModel#">
+<cf_sparql name="qInstances" model="#variables.infModel#">
 				
 		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
 		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
 		<cf_sparqlns prefix="owl" uri="#application.util.vocab.OWL.uri#" />
 		<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
 								
-		SELECT ?subj
+		SELECT ?beer ?type
 		WHERE {
-			?subj rdfs:subClassOf beer:Beer.
+			?beer rdf:type beer:Beer.
+			OPTIONAL {
+				?beer rdf:type ?type.
+			}
+			FILTER (?type != owl:Thing && ?type != beer:Beer)
 		}
 </cf_sparql>
 
