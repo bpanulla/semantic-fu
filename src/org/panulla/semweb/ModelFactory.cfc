@@ -4,7 +4,7 @@
 		// ColdFusion Service API
 		variables.dsServiceFactory = CreateObject("java", "coldfusion.server.ServiceFactory").getDataSourceService();
 		
-		variables.loader = CreateObject("component", "org.panulla.semweb.DefaultClassLoader");
+		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
 	</cfscript>
 	
 	
@@ -18,18 +18,21 @@
 	
 	
 	<cffunction name="init" access="public" hint="Constructor" returntype="ModelFactory" output="false">
-		<cfargument name="loader" type="javaloader.JavaLoader">
+		<cfargument name="loader" type="JavaLoaderFacade" required="false">
 		
 		<cfscript>
-			this.loader =  variables.loader; //arguments.loader;
+			if (isDefined("arguments.loader") and isObject(arguments.loader))
+			{
+				variables.loader = arguments.loader;
+			}
 
 			// Create helper objects -- Jena Framework
-			variables.modelFactory = this.loader.create("com.hp.hpl.jena.rdf.model.ModelFactory");
-			variables.dbModelLocator = this.loader.create("com.hp.hpl.jena.db.ModelRDB");
-			variables.modelSpec = this.loader.create("com.hp.hpl.jena.ontology.OntModelSpec");
+			variables.modelFactory = variables.loader.create("com.hp.hpl.jena.rdf.model.ModelFactory");
+			variables.dbModelLocator = variables.loader.create("com.hp.hpl.jena.db.ModelRDB");
+			variables.modelSpec = variables.loader.create("com.hp.hpl.jena.ontology.OntModelSpec");
 			
 			// Pellet Reasoner
-			variables.reasonerFactory = this.loader.create("org.mindswap.pellet.jena.PelletReasonerFactory");
+			variables.reasonerFactory = variables.loader.create("org.mindswap.pellet.jena.PelletReasonerFactory");
 		</cfscript>
 	
 		<cfreturn this>
@@ -54,7 +57,7 @@
 			local.myConn = variables.dsServiceFactory.getDatasource(arguments.datasource).getConnection();
 			
 			// Create a Jena IDBConnection - http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/db/DBConnection.html
-			local.jenaConn = this.loader.create("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype);
+			local.jenaConn = variables.loader.create("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype);
 			
 			if (local.jenaConn.containsModel(arguments.name))
 			{

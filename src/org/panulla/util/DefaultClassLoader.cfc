@@ -5,5 +5,4 @@
 		<cfreturn CreateObject("java", arguments.classname)>
 	</cffunction>
 
-
 </cfcomponent>
