@@ -36,7 +36,7 @@
 		<!--- Cache some key CFCs for speed --->
 		<cfset application.util.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init() />	
 		
-		<cfset application.util.vocab = CreateObject("component", "org.panulla.semweb.VocabularyModel").init().vocab />
+		<cfset application.util.vocab = CreateObject("component", "org.panulla.semweb.VocabularyModel").init() />
 
 		<cfreturn true />
 	</cffunction>
