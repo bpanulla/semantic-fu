@@ -78,6 +78,8 @@
 		QueryExecutionFactory = createObject("java", "com.hp.hpl.jena.query.QueryExecutionFactory");
 		query = QueryFactory.create(q);
 		
+		// Time the query
+		tickBegin = GetTickCount(); 
 		
 		if (query.isSelectType())
 		{
@@ -137,9 +139,17 @@
 
 		// Free up resources used running the query
 		qe.close();
+		
+		tickEnd = GetTickCount(); 
+		executionTime = tickEnd - tickBegin;
 	</cfscript>
 	
 	<cfset caller["#attributes.name#"] = returnValue />
+	
+	<cfset metadata = structNew() />
+	<cfset metadata.executionTime = executionTime />
+	
+	<cfset caller["CFSPARQL"] = metadata />
 </cfif>
 
 </cfsilent>
