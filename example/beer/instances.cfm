@@ -21,7 +21,7 @@
 
 </cfscript>
 
-<cf_sparql name="qInstances" model="#variables.infModel#">
+<cf_sparql name="qInstances" model="#variables.infModel#" debug="true">
 				
 		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
 		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
@@ -37,6 +37,9 @@
 			FILTER (?type != owl:Thing && ?type != beer:Beer)
 		}
 </cf_sparql>
+
+Records: <cfoutput>#qInstances.recordcount#</cfoutput><br>
+Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
 
 <cfdump var="#qInstances#">
 

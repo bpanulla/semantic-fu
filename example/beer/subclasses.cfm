@@ -15,7 +15,7 @@
 	variables.defaultModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
 </cfscript>
 
-<cf_sparql name="qInstances" model="#variables.defaultModel#">
+<cf_sparql name="qInstances" model="#variables.defaultModel#" debug="true">
 				
 		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
 		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
@@ -27,6 +27,9 @@
 			?subj rdfs:subClassOf beer:Beer.
 		}
 </cf_sparql>
+
+Records: <cfoutput>#qInstances.recordcount#</cfoutput><br>
+Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
 
 <cfdump var="#qInstances#">
 

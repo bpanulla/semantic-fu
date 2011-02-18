@@ -28,7 +28,10 @@
 		}
 </cf_sparql>
 
-<cfdump var="#qAllTriples#">
+Records: <cfoutput>#qAllTriples.recordcount#</cfoutput><br>
+Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
+
+<cfdump var="#qAllTriples#" expand="false">
 
 <a href=".">Back</a>
 </body>

@@ -20,7 +20,7 @@
 	variables.infModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
 </cfscript>
 
-<cf_sparql name="qAllTriples" model="#variables.infModel#">
+<cf_sparql name="qAllTriples" model="#variables.infModel#" debug="true">
 				
 		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
 		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
@@ -33,7 +33,9 @@
 		}
 </cf_sparql>
 
-<cfdump var="#qAllTriples#">
+Records: <cfoutput>#qAllTriples.recordcount#</cfoutput><br>
+Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
+<cfdump var="#qAllTriples#" expand="false">
 
 <a href=".">Back</a>
 </body>
