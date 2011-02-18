@@ -4,6 +4,7 @@
 <cfparam name="attributes.model" type="any" />
 <cfparam name="attributes.returnformat" type="string" default="" />
 <cfparam name="attributes.debug" type="boolean" default="false" />
+<cfparam name="attributes.returnMetadata" type="variablename" default="CFSPARQL" />
 
 <cffunction name="resultSet2Query">
 	<cfargument name="result" type="any" required="true" />
@@ -149,7 +150,7 @@
 	<cfset metadata = structNew() />
 	<cfset metadata.executionTime = executionTime />
 	
-	<cfset caller["CFSPARQL"] = metadata />
+	<cfset caller[attributes.returnMetadata] = metadata />
 </cfif>
 
 </cfsilent>
