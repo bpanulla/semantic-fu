@@ -5,7 +5,7 @@
 	\ =========================================================================================================== --->
 
 	<!--- Application settings --->
-	<cfset this.name = "WineBrowser" />
+	<cfset this.name = "BeerBrowser" />
 	<cfset this.applicationTimeout = createTimespan(5,0,0,0) />
 	<cfset this.loginStorage = "session" />
 
