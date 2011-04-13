@@ -4,6 +4,13 @@
 		// ColdFusion Service API
 		variables.dsServiceFactory = CreateObject("java", "coldfusion.server.ServiceFactory").getDataSourceService();
 		
+		variables.jenaModelClasses =
+			"com.hp.hpl.jena.rdf.model.Model," &
+			"com.hp.hpl.jena.db.ModelRDB," &
+			"com.hp.hpl.jena.rdf.model.impl.ModelCom," &
+			"com.hp.hpl.jena.rdf.model.impl.InfModelImpl," &
+			"com.hp.hpl.jena.ontology.impl.OntModelImpl";
+		
 		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
 	</cfscript>
 	
@@ -38,13 +45,25 @@
 		<cfreturn this>
 	</cffunction>
 
+	<cffunction name="wrapModel" access="private" output="false" returntype="org.panulla.semweb.Model">
+		<cfargument name="model" type="any" required="true" />
+		
+		<cfset var modelClass = GetMetaData(arguments.model).getCanonicalName() />
+		
+		<cfif NOT listFind( variables.jenaModelClasses, modelClass )>
+			<cfthrow type="ModelFactory" message="Unknown model type '#modelClass#'" />
+		<cfelse>
+			<cfreturn createObject("component", "org.panulla.semweb.Model").init( arguments.model, variables.loader ) />
+		</cfif>
+	</cffunction>
 
-	<cffunction name="getModel" access="public" returntype="any" output="false">
-		<cfreturn variables.modelFactory.createDefaultModel() />
+
+	<cffunction name="getModel" access="public" returntype="org.panulla.semweb.Model" output="false">
+		<cfreturn wrapModel( variables.modelFactory.createDefaultModel() )  />
 	</cffunction>
 	
 	
-	<cffunction name="getPersistentModel" access="public" returntype="any" output="false">
+	<cffunction name="getPersistentModel" access="public" returntype="org.panulla.semweb.Model" output="false">
 		<cfargument name="datasource" type="string" required="true" />
 		<cfargument name="name" type="string" required="false" />
 		<cfargument name="dbtype" type="string" required="false" default="MySQL" />
@@ -72,24 +91,28 @@
 				throw("Requested model does not exist.", "Jena Model", "Model '"& arguments.name &"' does not exist in datasource '"& arguments.datasource &"'. Create the model, or set createOnNew to true to create automatically.");
 			}		
 		</cfscript>
-	
-		<cfreturn local.model />
+		
+		<cfreturn wrapModel( local.model ) />
 	</cffunction>
 
 
-	<cffunction name="getReasoningModel" access="public" returntype="Any" output="false">
+	<cffunction name="getReasoningModel" access="public" returntype="org.panulla.semweb.Model" output="false">
 		<cfargument name="inferencing" type="string" required="true" hint="Level of inferencing supported by model." default="OWL_DL_MEM" />
 		<cfargument name="model" type="any" required="false" default="#getModel()#" />
 		
 		<cfscript>
 			var local = structNew();
 			
+			// Create a Pellet reasoner
 			local.baseReasoner = variables.reasonerFactory.theInstance().create();
-			local.infModel = variables.modelFactory.createInfModel( local.baseReasoner, arguments.model);
 			
-			local.model = variables.modelFactory.createOntologyModel(variables.modelSpec[arguments.inferencing], local.infModel);
+			// Extract the source model object from the wrapper passed to the method
+			local.infModel = variables.modelFactory.createInfModel( local.baseReasoner, arguments.model.getSource());
+			
+			// Re-inject the resoner model into the model wrapper
+			arguments.model.setSource( variables.modelFactory.createOntologyModel(variables.modelSpec[arguments.inferencing], local.infModel) );
 		</cfscript>
 	
-		<cfreturn local.model />
+		<cfreturn arguments.model />
 	</cffunction>
 </cfcomponent>

@@ -57,9 +57,7 @@
 <cfif NOT IsDefined("thisTag.executionMode")>
 	<cfthrow type="CF_SPARQL" message="Must be called as custom tag.">
 
-<cfelseif NOT isInstanceOf(attributes.model, "com.hp.hpl.jena.rdf.model.impl.ModelCom")
-					AND NOT isInstanceOf(attributes.model, "com.hp.hpl.jena.rdf.model.impl.InfModelImpl")
-					AND NOT isInstanceOf(attributes.model, "com.hp.hpl.jena.ontology.impl.OntModelImpl")>
+<cfelseif NOT isInstanceOf(attributes.model, "org.panulla.semweb.Model")>
 	<cfthrow type="CF_SPARQL" message="Model reference is not a known model type.">
 </cfif>
 
@@ -85,7 +83,7 @@
 		if (query.isSelectType())
 		{
 			// Execute the query
-			qe = QueryExecutionFactory.create(query, attributes.model);
+			qe = QueryExecutionFactory.create(query, attributes.model.getSource());
 			result = qe.execSelect();
 			
 			// Format the result
@@ -112,7 +110,7 @@
 		else if (query.isAskType())
 		{
 			// Execute the query
-			qe = QueryExecutionFactory.create(query, attributes.model);
+			qe = QueryExecutionFactory.create(query, attributes.model.getSource());
 			result = qe.execAsk();
 			
 			// Format the result

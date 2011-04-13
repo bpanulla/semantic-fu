@@ -6,19 +6,12 @@
 <body>
 
 <cfscript>
-	// Read in Beer Ontology
-	variables.beerOntology = fileRead(application.properties.ontologyLibraryFolder & "/beer.owl");
-	variables.ontoByteStream = createObject("java", "java.io.ByteArrayInputStream")
-																		.init(variables.beerOntology.getBytes());			
-	
-	variables.defaultModel = application.util.modelFactory.getModel();
-	
-	variables.infModel = application.util.modelFactory.getReasoningModel(
-							application.properties.infLevel,
-							variables.defaultModel);
+	// Get a model with inferencing
+	variables.infModel = application.util.modelFactory.getReasoningModel( application.properties.infLevel );
 							
-	variables.infModel.read(variables.ontoByteStream, "http://www.purl.org/net/ontology/beer##");
-
+	// Read in Beer Ontology
+	variables.beerOntology = application.properties.ontologyLibraryFolder & "/beer.owl";
+	variables.infModel.read( variables.beerOntology, "http://www.purl.org/net/ontology/beer##" );	
 </cfscript>
 
 <cf_sparql name="qInstances" model="#variables.infModel#" debug="true">
