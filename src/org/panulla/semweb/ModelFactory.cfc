@@ -4,14 +4,9 @@
 		// ColdFusion Service API
 		variables.dsServiceFactory = CreateObject("java", "coldfusion.server.ServiceFactory").getDataSourceService();
 		
-		variables.jenaModelClasses =
-			"com.hp.hpl.jena.rdf.model.Model," &
-			"com.hp.hpl.jena.db.ModelRDB," &
-			"com.hp.hpl.jena.rdf.model.impl.ModelCom," &
-			"com.hp.hpl.jena.rdf.model.impl.InfModelImpl," &
-			"com.hp.hpl.jena.ontology.impl.OntModelImpl";
-		
 		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
+		
+		private function $( String classname ) { return variables.loader.create( classname ); };
 	</cfscript>
 	
 	
@@ -21,6 +16,15 @@
 		<cfargument name="abort" required="false" type="boolean" default="false">
 		
 		<cfdump var="#arguments.var#" expand="#arguments.expand#" format="html" abort="#arguments.abort#">
+	</cffunction>
+	
+	
+	<cffunction name="throwException" access="private" hint="Wraps CFTHROW in a function" output="false" returntype="void">
+		<cfargument name="type" required="true" type="string">
+		<cfargument name="message" required="true" type="string">
+		<cfargument name="detail" required="false" type="string" default="">
+		
+		<cfthrow type="#arguments.type#" message="#arguments.message#" detail="#arguments.detail#" />
 	</cffunction>
 	
 	
@@ -34,12 +38,12 @@
 			}
 
 			// Create helper objects -- Jena Framework
-			variables.modelFactory = variables.loader.create("com.hp.hpl.jena.rdf.model.ModelFactory");
-			variables.dbModelLocator = variables.loader.create("com.hp.hpl.jena.db.ModelRDB");
-			variables.modelSpec = variables.loader.create("com.hp.hpl.jena.ontology.OntModelSpec");
+			variables.modelFactory = $("com.hp.hpl.jena.rdf.model.ModelFactory");
+			variables.dbModelLocator = $("com.hp.hpl.jena.db.ModelRDB");
+			variables.modelSpec = $("com.hp.hpl.jena.ontology.OntModelSpec");
 			
 			// Pellet Reasoner
-			variables.reasonerFactory = variables.loader.create("org.mindswap.pellet.jena.PelletReasonerFactory");
+			variables.reasonerFactory = $("org.mindswap.pellet.jena.PelletReasonerFactory");
 		</cfscript>
 	
 		<cfreturn this>
@@ -69,29 +73,23 @@
 		<cfargument name="dbtype" type="string" required="false" default="MySQL" />
 		<cfargument name="createOnNew" type="boolean" default="false" />
 		
-		<cfscript>
-			var local = structNew();
+		<cfset var local = structNew() />
 			
-			// Get a handle to a CF datasource - http://www.petefreitag.com/item/152.cfm
-			local.myConn = variables.dsServiceFactory.getDatasource(arguments.datasource).getConnection();
+		<!--- Get a handle to a CF datasource - http://www.petefreitag.com/item/152.cfm--->
+		<cfset local.myConn = variables.dsServiceFactory.getDatasource(arguments.datasource).getConnection() />
 			
-			// Create a Jena IDBConnection - http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/db/DBConnection.html
-			local.jenaConn = variables.loader.create("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype);
+		<!---Create a Jena IDBConnection - http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/db/DBConnection.html--->
+		<cfset local.jenaConn = $("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype) />
 			
-			if (local.jenaConn.containsModel(arguments.name))
-			{
-				local.model = variables.dbModelLocator.open(local.jenaConn, arguments.name);
-			}
-			else if (arguments.createOnNew)
-			{
-				local.model = variables.dbModelLocator.createModel(local.jenaConn, arguments.name);
-			}
-			else
-			{
-				throw("Requested model does not exist.", "Jena Model", "Model '"& arguments.name &"' does not exist in datasource '"& arguments.datasource &"'. Create the model, or set createOnNew to true to create automatically.");
-			}		
-		</cfscript>
-		
+		<cfif local.jenaConn.containsModel(arguments.name)>
+			<cfset local.model = variables.dbModelLocator.open(local.jenaConn, arguments.name) />
+		<cfelseif arguments.createOnNew>
+			<cfset local.model = variables.dbModelLocator.createModel(local.jenaConn, arguments.name) />
+		<cfelse>
+			<cfthrow message="Requested model does not exist." type="ModelFactory"
+					 detail="Model '#arguments.name#' does not exist in datasource '#arguments.datasource#'. Create the model, or set createOnNew to true to create automatically.">
+		</cfif>
+
 		<cfreturn wrapModel( local.model ) />
 	</cffunction>
 
@@ -115,4 +113,37 @@
 	
 		<cfreturn arguments.model />
 	</cffunction>
+	
+	
+	<cffunction name="getStardogModel" access="public" returntype="org.panulla.semweb.Model" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name model server to connect to." />
+		
+		<cfscript>
+			var local = {};
+			local.conn = $("com.clarkparsia.stardog.api.ConnectionConfiguration")
+								.to( arguments.name )	// the name of the db to connect to
+								.createIfNotPresent()	// create the db if it does not exist -- this creates a temporary, non-persistent memory db
+								.connect(); 			// now open the connection
+
+			// obtain a jena for the specified stardog database.
+			local.model = $("com.clarkparsia.stardog.jena.SDJenaFactory").createModel( local.conn );
+		</cfscript>
+	
+		<cfreturn wrapModel( local.model ) />
+	</cffunction>
+
+	<cffunction name="getStardogServerModel" access="public" returntype="org.panulla.semweb.Model" output="false">
+		<cfargument name="url" type="string" required="true" hint="URL of the server to connect to." />
+		
+		<cfscript>
+			var local = {};
+			local.conn = $("com.clarkparsia.stardog.api.ConnectionConfiguration").at( arguments.url );
+
+			// obtain a jena for the specified stardog database.
+			local.model = $("com.clarkparsia.stardog.jena.SDJenaFactory").createModel( local.conn );
+		</cfscript>
+	
+		<cfreturn wrapModel( local.model ) />
+	</cffunction>
+	
 </cfcomponent>
