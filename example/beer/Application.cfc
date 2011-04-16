@@ -32,12 +32,7 @@
 		<cfset application.properties.rootFolder = this.rootFolder />
 		<cfset application.properties.ontologyLibraryFolder = ExpandPath("./owl") />		
 		<cfset application.properties.infLevel = "OWL_DL_MEM" />
-	
-		<!--- Cache some key CFCs for speed --->
-		<cfset application.util.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init() />	
 		
-		<cfset application.util.vocab = CreateObject("component", "org.panulla.semweb.VocabularyModel").init() />
-
 		<cfreturn true />
 	</cffunction>
 

@@ -6,8 +6,11 @@
 <body>
 
 <cfscript>
+	variables.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init();	
+	variables.vocab = CreateObject("component", "org.panulla.semweb.VocabularyModel").init();
+
 	// Get a standard model
-	variables.defaultModel = application.util.modelFactory.getModel();
+	variables.defaultModel = variables.modelFactory.getModel();
 		
 	// Read in Beer Ontology
 	variables.beerOntology = application.properties.ontologyLibraryFolder & "/beer.owl";
@@ -16,9 +19,9 @@
 
 <cf_sparql name="qInstances" model="#variables.defaultModel#" debug="true">
 				
-		<cf_sparqlns prefix="rdf" uri="#application.util.vocab.RDF.uri#" />
-		<cf_sparqlns prefix="rdfs" uri="#application.util.vocab.RDFS.uri#" />
-		<cf_sparqlns prefix="owl" uri="#application.util.vocab.OWL.uri#" />
+		<cf_sparqlns prefix="rdf" uri="#variables.vocab.RDF.uri#" />
+		<cf_sparqlns prefix="rdfs" uri="#variables.vocab.RDFS.uri#" />
+		<cf_sparqlns prefix="owl" uri="#variables.vocab.OWL.uri#" />
 		<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
 								
 		SELECT ?subj
