@@ -1,41 +1,21 @@
-﻿<cfcomponent output="false" hint="Encapsulates an instance of JavaLoader, providing a constructor to populate the classpath from a list.">
+﻿<cfcomponent output="false" hint="Encapsulates an instance of a Java class loader.">
 
 	<cfscript>
-		variables.classloader = "";
+		variables.classloader = createObject("component", "org.panulla.util.SimpleClassLoader");
 	</cfscript>
 
 
-	<cffunction name="init" output="false" access="public" returntype="JavaLoaderFacade"
-							hint="Instantiates and configures the Java Class Loader">
-		<cfargument name="classpath" required="true" type="string" hint="Semicolon-delimited list of folders/jars to use for class lookups." />
-		<cfargument name="libraryRoot" required="false" default="" hint="Base path for relative classpath entries." />
-		<cfargument name="delimiter" required="false" default=";" hint="Delimiter used in classpath. Default is semicolon (;)." />
-		<cfargument name="loadServerClasspath" required="false" default="true" hint="Include ColdFusion classpath in loader's classpath" />
+	<cffunction name="init" output="false" access="public" returntype="org.panulla.util.JavaLoaderFacade" hint="Instantiates and configures the Java class loader">
+		<cfargument name="dynamicLoader" type="org.panulla.util.DynamicClassLoader" required="false" hint="Use dynamic loader in place of standard loader" />
 	
 		<cfscript>
-			var local = structNew();
-			
-			local.classpath = arrayNew(1);
-			
-			// Loop over classpath list, checking for relative path names
-			for ( local.i = 1; local.i LTE listLen(arguments.classpath, arguments.delimiter); local.i = local.i + 1 )
+			if (isDefined("arguments.dynamicLoader"))
 			{
-				local.entry = listGetAt(arguments.classpath, local.i, arguments.delimiter);
-				
-				// If the file specified by the path doesn't exist, try prepending the library root
-				if (NOT fileExists(local.entry))
-				{
-					local.entry = arguments.libraryRoot & "/" & local.entry; 
-				}
-				
-				arrayAppend(local.classpath,  local.entry);
+				variables.classloader = arguments.dynamicLoader;
 			}
 			
-			variables.classloader = createObject("component", "javaloader.JavaLoader")
-															  .init(local.classpath, arguments.loadServerClasspath);
+			return this;
 		</cfscript>
-	
-		<cfreturn this />
 	</cffunction>
 	
 
@@ -45,6 +25,5 @@
 	
 		<cfreturn variables.classloader.create(arguments.classname) />
 	</cffunction>
-
 
 </cfcomponent>

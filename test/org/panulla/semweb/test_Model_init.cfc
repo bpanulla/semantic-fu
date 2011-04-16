@@ -84,7 +84,7 @@
 			
 			// Verify model and loader type
 			assertEquals( local.expected, local.model.getSource() );
-			assertEquals( "org.panulla.util.DefaultClassLoader",
+			assertEquals( "org.panulla.util.JavaLoaderFacade",
 							getMetadata(local.model.getLoader()).name);
 		}
 
@@ -96,7 +96,7 @@
 			
 			// Verify model and loader type
 			assertEquals( local.expected, local.model.getSource() );
-			assertEquals( "org.panulla.util.DefaultClassLoader",
+			assertEquals( "org.panulla.util.JavaLoaderFacade",
 							getMetadata(local.model.getLoader()).name);
 		}
 		
@@ -108,7 +108,7 @@
 			
 			// Verify model and loader type
 			assertEquals( local.expected, local.model.getSource() );
-			assertEquals( "org.panulla.util.DefaultClassLoader",
+			assertEquals( "org.panulla.util.JavaLoaderFacade",
 							getMetadata(local.model.getLoader()).name);
 		}
 		
@@ -121,10 +121,10 @@
 				local.model = variables.testModel.init(variables.testDefaultModel, "");
 				fail( "Expected exception to be thrown with invalid init arguments, but none was." );
 			}
-			catch ( Model e )
+			catch ( any e )
 			{
-				assertEquals("Invalid class loader", e.message);	
-				assertEquals("The argument passed to the setLoader() method does not appear to be a Java class loader", e.detail);	
+				assertEquals("org.panulla.util.JavaLoaderFacade", e.type);	
+				assertEquals("The loader argument passed to the init function is not of type org.panulla.util.JavaLoaderFacade.", e.message);	
 			}
 		}
 		
@@ -160,13 +160,13 @@
 			var local = {};
 
 			// Create a loader
-			local.expectedLoader = createObject("component", "org.panulla.util.JavaLoaderFacade");
+			local.expectedLoader = createObject("component", "org.panulla.util.JavaLoaderFacade").init();
 			
 			// Instantiate a model with the default loader
 			local.model = variables.testModel.init( variables.testDefaultModel );
 			
 			// Verify default loader is different from the one we created
-			assertNotEquals( local.expectedLoader, local.model.getLoader() );
+			assertEquals( local.expectedLoader, local.model.getLoader() );
 			
 			// Inject a different model via setLoader()
 			local.model.setLoader( local.expectedLoader );

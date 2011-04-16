@@ -6,20 +6,27 @@
 			"com.hp.hpl.jena.rdf.model.impl.ModelCom," &
 			"com.hp.hpl.jena.rdf.model.impl.InfModelImpl," &
 			"com.hp.hpl.jena.ontology.impl.OntModelImpl";
-		
-		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
 
+		// Instantiate a default loader
+		variables.loader = createObject("component", "org.panulla.util.JavaLoaderFacade");
+		
+		// Helper function to clean up calls to the class loader
 		function $( classname ) { return variables.loader.create( arguments.classname ); };
 	</cfscript>
 
 	
 	<cffunction name="init" access="public" output="false" returntype="org.panulla.semweb.Model">
 		<cfargument name="model" type="any" required="true" />
-		<cfargument name="loader" type="any" required="false" />
+		<cfargument name="loader" type="org.panulla.util.JavaLoaderFacade" required="false" />
 		
 		<cfscript>
 			setSource( arguments.model );
-			if (isDefined("arguments.loader")) setLoader( arguments.loader );
+			
+			if (isDefined("arguments.loader"))
+			{
+				// Use the loader passed as constructor argument
+				variables.loader = arguments.loader;
+			}
 			
 			return this;
 		</cfscript>
@@ -36,7 +43,7 @@
 
 
 	<cffunction name="setLoader" access="public" output="false" returntype="org.panulla.semweb.Model">
-		<cfargument name="loader" type="any" required="true" />
+		<cfargument name="loader" type="org.panulla.util.JavaLoaderFacade" required="true" />
 		
 		<cfscript>
 			if ( not isDefined("arguments.loader.create") or not isCustomFunction(arguments.loader.create) )

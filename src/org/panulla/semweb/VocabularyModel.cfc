@@ -1,17 +1,20 @@
 ﻿<cfcomponent>
 	
 	<cfscript>
-		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
-				
+		// Instantiate a default loader
+		variables.loader = CreateObject("component", "org.panulla.util.JavaLoaderFacade").init();
+		
+		// Helper function to clean up calls to the class loader
 		function $( classname ) { return variables.loader.create( arguments.classname ); };
 	</cfscript>
-
-	<cffunction name="init" access="public" hint="Constructor" returntype="VocabularyModel" output="false">
-		<cfargument name="loader" type="JavaLoaderFacade" required="false">
+	
+	<cffunction name="init" access="public" hint="Constructor" returntype="org.panulla.semweb.VocabularyModel" output="false">
+		<cfargument name="loader" type="org.panulla.util.JavaLoaderFacade" required="false">
 		
 		<cfscript>
-			if (isDefined("arguments.loader") and isObject(arguments.loader))
+			if (isDefined("arguments.loader"))
 			{
+				// Use the loader passed as constructor argument
 				variables.loader = arguments.loader;
 			}
 

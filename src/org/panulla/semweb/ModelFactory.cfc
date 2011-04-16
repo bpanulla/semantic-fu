@@ -1,20 +1,20 @@
 ﻿<cfcomponent>
-
+	
 	<cfscript>
-		// ColdFusion Service API
-		variables.dsServiceFactory = CreateObject("java", "coldfusion.server.ServiceFactory").getDataSourceService();
-		
-		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
-		
+		// Instantiate a default loader
+		variables.loader = createObject("component", "org.panulla.util.JavaLoaderFacade").init();
+			
+		// Helper function to clean up calls to the class loader
 		function $( classname ) { return variables.loader.create( arguments.classname ); };
 	</cfscript>
-	
+
 	<cffunction name="init" access="public" hint="Constructor" returntype="ModelFactory" output="false">
-		<cfargument name="loader" type="JavaLoaderFacade" required="false">
+		<cfargument name="loader" type="org.panulla.util.JavaLoaderFacade" required="false">
 		
 		<cfscript>
-			if (isDefined("arguments.loader") and isObject(arguments.loader))
+			if (isDefined("arguments.loader"))
 			{
+				// Use the loader passed as constructor argument
 				variables.loader = arguments.loader;
 			}
 
@@ -23,6 +23,9 @@
 			variables.dbModelLocator = $("com.hp.hpl.jena.db.ModelRDB");
 			variables.modelSpec = $("com.hp.hpl.jena.ontology.OntModelSpec");
 			
+			// ColdFusion Service API
+			variables.dsServiceFactory = $("coldfusion.server.ServiceFactory").getDataSourceService();
+		
 			// Pellet Reasoner
 			variables.reasonerFactory = $("org.mindswap.pellet.jena.PelletReasonerFactory");
 			
