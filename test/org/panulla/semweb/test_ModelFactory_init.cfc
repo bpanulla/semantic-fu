@@ -12,6 +12,15 @@
 		variables.modelFactory = createObject("java","com.hp.hpl.jena.rdf.model.ModelFactory");
 		variables.modelSpec = createObject("java","com.hp.hpl.jena.ontology.OntModelSpec");
 		
+		TEST_JENA_INFERENCE_LEVELS = {
+					transitive = "com.hp.hpl.jena.reasoner.transitiveReasoner.TransitiveReasoner",
+					rdfs_simple = "com.hp.hpl.jena.reasoner.rulesys.RDFSRuleReasoner",
+					rdfs = "com.hp.hpl.jena.reasoner.rulesys.RDFSRuleReasoner",
+					owl_micro = "com.hp.hpl.jena.reasoner.rulesys.OWLMicroReasoner",
+					owl_mini = "com.hp.hpl.jena.reasoner.rulesys.OWLMiniReasoner",
+					owl = "com.hp.hpl.jena.reasoner.rulesys.OWLFBRuleReasoner"
+			};
+		
 		function beforeTests()
 		{
 		}
@@ -68,9 +77,39 @@
 			assertEquals( TEST_SIMPLE_MODEL_TYPE, getMetadata(local.model.getSource()).name );
 		}
 
-		function test_getInferencingModel()
+		function test_getInferredModel()
 		{
-			fail("Not implemented");
+			var local = {};
+			local.modelFactory = variables.testModelFactory.init();
+			
+			// Default model type
+			local.model = local.modelFactory.getInferredModel();
+			local.actual = local.model.getSource();
+			assertEquals( TEST_INFERENCING_MODEL_TYPE, getMetadata(local.actual).name );
+			assertEquals( TEST_JENA_INFERENCE_LEVELS['owl'], getMetadata(local.actual.getReasoner()).name );
+			
+			// Supported inferencing levels
+			for ( local.level in TEST_JENA_INFERENCE_LEVELS )
+			{
+				local.model = local.modelFactory.getInferredModel( local.level );
+				local.actual = local.model.getSource();
+				assertEquals( TEST_INFERENCING_MODEL_TYPE, getMetadata(local.actual).name );
+				
+				assertEquals( TEST_JENA_INFERENCE_LEVELS[local.level], getMetadata(local.actual.getReasoner()).name );
+			}
+			
+			// Unknown inferencing type
+			local.inferencing = "magic";
+			try
+			{
+				local.model = local.modelFactory.getInferredModel( local.inferencing );
+				fail( "Expected exception to be thrown with invalid arguments, but none was." );
+			}
+			catch ( ModelFactory e )
+			{
+				assertEquals("Unknown reasoner 'magic'", e.message);	
+				assertEquals("The requested reasoning profile does not exist in the current reasoner registry configuration.", e.detail);	
+			}
 		}
 		
 		function test_getReasoningModel()

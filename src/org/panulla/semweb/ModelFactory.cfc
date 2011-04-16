@@ -21,6 +21,7 @@
 			// Create helper objects -- Jena Framework
 			variables.modelFactory = $("com.hp.hpl.jena.rdf.model.ModelFactory");
 			variables.dbModelLocator = $("com.hp.hpl.jena.db.ModelRDB");
+			variables.reasonerRegistry = $("com.hp.hpl.jena.reasoner.ReasonerRegistry");
 			variables.modelSpec = $("com.hp.hpl.jena.ontology.OntModelSpec");
 			
 			// ColdFusion Service API
@@ -58,7 +59,7 @@
 			local.myConn = variables.dsServiceFactory.getDatasource(arguments.datasource).getConnection();
 			
 			 // Create a Jena IDBConnection - http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/db/DBConnection.html
-			local.jenaConn = variables.loader.create("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype);
+			local.jenaConn = $("com.hp.hpl.jena.db.DBConnection").init(local.myConn, arguments.dbtype);
 			
 			if ( local.jenaConn.containsModel(arguments.name) )
 			{
@@ -78,9 +79,48 @@
 	</cffunction>
 
 
+	<cffunction name="getInferredModel" access="public" returntype="org.panulla.semweb.Model" output="false">
+		<cfargument name="inferencing" type="string" required="false" hint="Level of inferencing supported by model." default="owl" />
+		<cfargument name="model" type="org.panulla.semweb.Model" required="false" default="#getModel()#" />
+	
+		<cfscript>
+			var local = {};
+			
+			// Jena model with built-in OWL reasoner
+			switch (arguments.inferencing)
+			{
+				case "transitive":
+					local.baseReasoner = variables.reasonerRegistry.getTransitiveReasoner();
+					break;
+				case "rdfs_simple":
+					local.baseReasoner = variables.reasonerRegistry.getRDFSSimpleReasoner();
+					break;
+				case "rdfs":
+					local.baseReasoner = variables.reasonerRegistry.getRDFSReasoner();
+					break;
+				case "owl_micro":
+					local.baseReasoner = variables.reasonerRegistry.getOWLMicroReasoner();
+					break;
+				case "owl_mini":
+					local.baseReasoner = variables.reasonerRegistry.getOWLMiniReasoner();
+					break;
+				case "owl":
+					local.baseReasoner = variables.reasonerRegistry.getOWLReasoner();
+					break;
+				default:
+					throwException( "ModelFactory", "Unknown reasoner '#arguments.inferencing#'", "The requested reasoning profile does not exist in the current reasoner registry configuration." );
+			}
+			local.infModel = variables.modelFactory.createInfModel( local.baseReasoner, arguments.model.getSource() );
+			
+			// Re-inject the resoner model into the model wrapper and return
+			return arguments.model.setSource( local.infModel );
+		</cfscript>
+	</cffunction>
+
+
 	<cffunction name="getReasoningModel" access="public" returntype="org.panulla.semweb.Model" output="false">
 		<cfargument name="inferencing" type="string" required="true" hint="Level of inferencing supported by model." default="OWL_DL_MEM" />
-		<cfargument name="model" type="any" required="false" default="#getModel()#" />
+		<cfargument name="model" type="org.panulla.semweb.Model" required="false" default="#getModel()#" />
 		
 		<cfscript>
 			var local = {};
@@ -90,11 +130,10 @@
 			
 			// Extract the source model object from the wrapper passed to the method
 			local.infModel = variables.modelFactory.createInfModel( local.baseReasoner, arguments.model.getSource());
+			local.ontModel = variables.modelFactory.createOntologyModel(variables.modelSpec[arguments.inferencing], local.infModel);
 			
-			// Re-inject the resoner model into the model wrapper
-			arguments.model.setSource( variables.modelFactory.createOntologyModel(variables.modelSpec[arguments.inferencing], local.infModel) );
-			
-			return arguments.model;
+			// Re-inject the resoner model into the model wrapper and return
+			return arguments.model.setSource( local.ontModel );
 		</cfscript>
 	</cffunction>
 
