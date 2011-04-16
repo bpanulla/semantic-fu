@@ -2,11 +2,14 @@
 	
 	<cfscript>
 		variables.jenaModelClasses =
-			"com.hp.hpl.jena.rdf.model.Model," &
 			"com.hp.hpl.jena.db.ModelRDB," &
 			"com.hp.hpl.jena.rdf.model.impl.ModelCom," &
 			"com.hp.hpl.jena.rdf.model.impl.InfModelImpl," &
 			"com.hp.hpl.jena.ontology.impl.OntModelImpl";
+		
+		variables.loader = CreateObject("component", "org.panulla.util.DefaultClassLoader");
+
+		function $( classname ) { return variables.loader.create( arguments.classname ); };
 	</cfscript>
 
 	
@@ -16,7 +19,7 @@
 		
 		<cfscript>
 			setSource( arguments.model );
-			setLoader( arguments.loader );
+			if (isDefined("arguments.loader")) setLoader( arguments.loader );
 			
 			return this;
 		</cfscript>
@@ -28,9 +31,7 @@
 	\========================================================= --->
 
 	<cffunction name="getLoader" access="public" output="false" returntype="any">
-		<cfscript>
-			return variables.loader;
-		</cfscript>
+		<cfreturn variables.loader />
 	</cffunction>
 
 
@@ -51,9 +52,7 @@
 
 
 	<cffunction name="getSource" access="public" output="false" returntype="any">
-		<cfscript>
-			return variables.model;
-		</cfscript>
+		<cfreturn variables.model />
 	</cffunction>
 
 
@@ -62,11 +61,11 @@
 		
 		<cfscript>
 			var local = {};
-			local.modelClass = GetMetaData( arguments.model ).getCanonicalName();
+			local.modelClass = GetMetaData( arguments.model ).name;
 		
-			if (not listFind( variables.jenaModelClasses, modelClass ))
+			if (not listFind( variables.jenaModelClasses, local.modelClass ))
 			{
-				throwException("Model", "Invalid model type", "Instance of type '#modelClass#' passed to setSource() method is not a known model type.");	
+				throwException("Model", "Invalid model type", "Instance of type '#local.modelClass#' passed to setSource() method is not a known model type.");	
 			}
 			
 			variables.model = arguments.model;
@@ -121,7 +120,7 @@
 		
 		<cfscript>
 			var local = {};
-			local.byteStream = variables.loader.create("java.io.ByteArrayInputStream").init(arguments.source.getBytes());			
+			local.byteStream = $("java.io.ByteArrayInputStream").init(arguments.source.getBytes());			
 			variables.model.read( local.byteStream, arguments.baseUri );
 			
 			return this;
@@ -134,7 +133,7 @@
 		
 		<cfscript>
 			var local = {};
-			local.byteStream = variables.loader.create("java.io.ByteArrayOutputStream").init();
+			local.byteStream = $("java.io.ByteArrayOutputStream").init();
 			variables.model.write( local.byteStream, arguments.format );
 			
 			return local.byteStream.toString();
@@ -149,18 +148,14 @@
 	<cffunction name="getResource" access="public" output="false" returntype="any">
 		<cfargument name="uri" type="string" required="true" />
 		
-		<cfscript>
-			return variables.model.getResource( arguments.uri );
-		</cfscript>
+		<cfreturn variables.model.getResource( arguments.uri ) />
 	</cffunction>
 		
 
 	<cffunction name="createResource" access="public" output="false" returntype="any">
 		<cfargument name="uri" type="string" required="true" />
 		
-		<cfscript>
-			return variables.model.createResource( arguments.uri );
-		</cfscript>
+		<cfreturn variables.model.createResource( arguments.uri ) />
 	</cffunction>
 
 
@@ -291,7 +286,7 @@
 		<cfscript>
 			if ( not isDefined("variables.QueryFactory") )
 			{
-				variables.QueryFactory = variables.loader.create("com.hp.hpl.jena.query.QueryFactory");
+				variables.QueryFactory = $("com.hp.hpl.jena.query.QueryFactory");
 			}
 			
 			return variables.QueryFactory;
@@ -303,7 +298,7 @@
 		<cfscript>
 			if ( not isDefined("variables.QueryExecutionFactory") )
 			{
-				variables.QueryExecutionFactory = variables.loader.create("com.hp.hpl.jena.query.QueryExecutionFactory");
+				variables.QueryExecutionFactory = $("com.hp.hpl.jena.query.QueryExecutionFactory");
 			}
 			
 			return variables.QueryExecutionFactory;
@@ -315,7 +310,7 @@
 		<cfscript>
 			if ( not isDefined("variables.ResultSetFormatter") )
 			{
-				variables.ResultSetFormatter = variables.loader.create("com.hp.hpl.jena.query.ResultSetFormatter");
+				variables.ResultSetFormatter = $("com.hp.hpl.jena.query.ResultSetFormatter");
 			}
 			
 			return variables.ResultSetFormatter;
