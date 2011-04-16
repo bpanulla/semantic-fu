@@ -8,7 +8,7 @@
 			"com.hp.hpl.jena.ontology.impl.OntModelImpl";
 
 		// Instantiate a default loader
-		variables.loader = createObject("component", "org.panulla.util.JavaLoaderFacade");
+		variables.loader = createObject("component", "org.panulla.util.JavaLoaderFacade").init();
 		
 		// Helper function to clean up calls to the class loader
 		function $( classname ) { return variables.loader.create( arguments.classname ); };
