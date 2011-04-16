@@ -1,4 +1,4 @@
-﻿<cfcomponent>
+﻿<cfcomponent output="false">
 	
 	<cfscript>
 		// Instantiate a default loader
