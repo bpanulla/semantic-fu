@@ -1,4 +1,3 @@
-﻿<!---
 Copyright 2010 Brainpan Labs
 http://BrainpanLabs.com
 
@@ -13,14 +12,3 @@ http://BrainpanLabs.com
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
---->
-
-<cfcomponent output="false" hint="A simple Java class loader. Wraps native ColdFusion class loading functionality">
-	
-	<cffunction name="create" access="public" output="false" returntype="any">
-		<cfargument name="classname" type="string" required="true" />
-		
-		<cfreturn createObject("java", arguments.classname) />
-	</cffunction>
-
-</cfcomponent>
