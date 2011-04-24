@@ -71,7 +71,7 @@
 			}
 			else
 			{
-				throwException( "Requested model does not exist.", "ModelFactory", "Model '#arguments.name#' does not exist in datasource '#arguments.datasource#'. Create the model, or set createOnNew to true to create automatically." );
+				throwException( "ModelFactory", "Requested model does not exist.", "Model '#arguments.name#' does not exist in datasource '#arguments.datasource#'. Create the model, or set createOnNew to true to create automatically." );
 			}
 
 			return wrapModel( local.model );

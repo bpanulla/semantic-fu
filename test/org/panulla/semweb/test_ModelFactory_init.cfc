@@ -2,7 +2,6 @@
 
 	<cfscript>
 		TEST_SIMPLE_MODEL_TYPE = "com.hp.hpl.jena.rdf.model.impl.ModelCom";
-		TEST_PERSISTENT_MODEL_TYPE = "com.hp.hpl.jena.db.ModelRDB";
 		TEST_INFERENCING_MODEL_TYPE = "com.hp.hpl.jena.rdf.model.impl.InfModelImpl";
 		TEST_ONTOLOGY_MODEL_TYPE = "com.hp.hpl.jena.ontology.impl.OntModelImpl";
 		
