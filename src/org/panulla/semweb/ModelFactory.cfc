@@ -49,7 +49,7 @@
 	<cffunction name="getPersistentModel" access="public" returntype="org.panulla.semweb.Model" output="false">
 		<cfargument name="datasource" type="string" required="true" />
 		<cfargument name="name" type="string" required="false" />
-		<cfargument name="dbtype" type="string" required="false" default="MySQL" />
+		<cfargument name="dbtype" type="string" required="false" default="Derby" />
 		<cfargument name="createOnNew" type="boolean" default="false" />
 		
 		<cfscript>
