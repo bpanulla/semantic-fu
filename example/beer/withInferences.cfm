@@ -16,11 +16,6 @@ http://BrainpanLabs.com
 --->
 
 <cfsetting showdebugoutput="false">
-<html>
-<head>
-	<title>SPARQL Examples</title>
-</head>
-<body>
 
 <cfscript>
 	variables.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init();	
@@ -34,26 +29,34 @@ http://BrainpanLabs.com
 	variables.infModel.read( variables.beerOntology, "http://www.purl.org/net/ontology/beer##" );	
 </cfscript>
 
-<cf_sparql name="qInferences" model="#variables.infModel#" debug="true">
-				
-		<cf_sparqlns prefix="rdf" uri="#variables.vocab.RDF.uri#" />
-		<cf_sparqlns prefix="rdfs" uri="#variables.vocab.RDFS.uri#" />
-		<cf_sparqlns prefix="owl" uri="#variables.vocab.OWL.uri#" />
-		<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
-								
-		SELECT ?subj ?label
-		WHERE {
-			?subj rdfs:subClassOf beer:Beer.
-			?subj rdf:type ?type.
-			OPTIONAL {
-				?subj rdfs:label ?label
-			}
-			FILTER (?subj != owl:Nothing)
+<cf_sparql name="qInferences" model="#variables.infModel#">
+	<cf_sparqlns prefix="rdf" uri="#variables.vocab.RDF.uri#" />
+	<cf_sparqlns prefix="rdfs" uri="#variables.vocab.RDFS.uri#" />
+	<cf_sparqlns prefix="owl" uri="#variables.vocab.OWL.uri#" />
+	<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
+							
+	SELECT ?subj ?label
+	WHERE {
+		?subj rdfs:subClassOf beer:Beer.
+		?subj rdf:type ?type.
+		OPTIONAL {
+			?subj rdfs:label ?label
 		}
+		FILTER (?subj != owl:Nothing)
+	}
 </cf_sparql>
+
+<html>
+<head>
+	<title>SPARQL Examples: Beer Types (Subclasses) with Inferencing</title>
+</head>
+<body>
+
+<h1>Beer Types (Subclasses) - With Inferencing</h1>
 
 Records: <cfoutput>#qInferences.recordcount#</cfoutput><br>
 Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
+Source: <div><pre><cfoutput>#HTMLEditFormat(CFSPARQL.source)#</cfoutput></pre></div>
 
 <cfdump var="#qInferences#">
 

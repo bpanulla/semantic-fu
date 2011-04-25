@@ -16,11 +16,6 @@ http://BrainpanLabs.com
 --->
 
 <cfsetting showdebugoutput="false">
-<html>
-<head>
-	<title>SPARQL Examples</title>
-</head>
-<body>
 
 <cfscript>
 	variables.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init();	
@@ -34,21 +29,27 @@ http://BrainpanLabs.com
 	variables.defaultModel.read( variables.beerOntology, "http://www.purl.org/net/ontology/beer##" );
 </cfscript>
 
-<cf_sparql name="qInstances" model="#variables.defaultModel#" debug="true">
-				
-		<cf_sparqlns prefix="rdf" uri="#variables.vocab.RDF.uri#" />
-		<cf_sparqlns prefix="rdfs" uri="#variables.vocab.RDFS.uri#" />
-		<cf_sparqlns prefix="owl" uri="#variables.vocab.OWL.uri#" />
-		<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
-								
-		SELECT ?subj
-		WHERE {
-			?subj rdfs:subClassOf beer:Beer.
-		}
+<cf_sparql name="qInstances" model="#variables.defaultModel#">
+	<cf_sparqlns prefix="rdfs" uri="#variables.vocab.RDFS.uri#" />
+	<cf_sparqlns prefix="beer" uri="http://www.purl.org/net/ontology/beer##" />
+							
+	SELECT ?subj
+	WHERE {
+		?subj rdfs:subClassOf beer:Beer.
+	}
 </cf_sparql>
+
+<html>
+<head>
+	<title>SPARQL Examples: Beer Types (Subclasses)</title>
+</head>
+<body>
+
+<h1>Beer Types (Subclasses)</h1>
 
 Records: <cfoutput>#qInstances.recordcount#</cfoutput><br>
 Execution Time: <cfoutput>#CFSPARQL.executionTime#ms</cfoutput><br>
+Source: <div><pre><cfoutput>#HTMLEditFormat(CFSPARQL.source)#</cfoutput></pre></div>
 
 <cfdump var="#qInstances#">
 
