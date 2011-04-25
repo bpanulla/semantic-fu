@@ -25,8 +25,7 @@ http://BrainpanLabs.com
 	variables.defaultModel = variables.modelFactory.getModel();
 		
 	// Read in Beer Ontology
-	variables.beerOntology = application.properties.ontologyLibraryFolder & "/beer.owl";
-	variables.defaultModel.read( variables.beerOntology, "http://www.purl.org/net/ontology/beer##" );
+	variables.defaultModel.read( expandPath("./owl/beer.owl"), "http://www.purl.org/net/ontology/beer##" );
 </cfscript>
 
 <cf_sparql name="qInstances" model="#variables.defaultModel#">

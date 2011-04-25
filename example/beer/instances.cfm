@@ -21,12 +21,11 @@ http://BrainpanLabs.com
 	variables.modelFactory = CreateObject("component", "org.panulla.semweb.ModelFactory").init();	
 	variables.vocab = CreateObject("component", "org.panulla.semweb.VocabularyModel").init();
 
-	// Get a model with inferencing
-	variables.infModel = variables.modelFactory.getReasoningModel( application.properties.infLevel );
+	// Get a model with inferencing - OWL-DL
+	variables.infModel = variables.modelFactory.getReasoningModel( "OWL_DL_MEM" );
 							
 	// Read in Beer Ontology
-	variables.beerOntology = application.properties.ontologyLibraryFolder & "/beer.owl";
-	variables.infModel.read( variables.beerOntology, "http://www.purl.org/net/ontology/beer##" );	
+	variables.infModel.read( expandPath("./owl/beer.owl"), "http://www.purl.org/net/ontology/beer##" );	
 </cfscript>
 
 <cf_sparql name="qInstances" model="#variables.infModel#">
