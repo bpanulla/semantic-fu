@@ -1,3 +1,4 @@
+<cfsilent>
 <!---
 Copyright 2010 Brainpan Labs
 http://BrainpanLabs.com
@@ -15,8 +16,6 @@ http://BrainpanLabs.com
    limitations under the License.
 --->
 
-<cfsilent>
-
 <cfparam name="attributes.prefix" type="string" />
 <cfparam name="attributes.uri" type="string" />
 
@@ -24,7 +23,7 @@ http://BrainpanLabs.com
 
 <cfif thisTag.executionMode IS "end">
 	<cfif isSimpleValue(attributes.prefix) AND isValid("URL", attributes.uri)>
-		<cfset thisTag.generatedContent = "PREFIX #attributes.prefix#: <#attributes.uri#>" & newline />
+		<cfset thisTag.generatedContent = "PREFIX #attributes.prefix#: <#attributes.uri#>" />
 	<cfelse>
 		<cfthrow type="SPARQLNS" message="Could not construct namespace from parameters." />
 	</cfif>

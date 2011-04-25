@@ -1,3 +1,4 @@
+<cfsilent>
 <!---
 Copyright 2010 Brainpan Labs
 http://BrainpanLabs.com
@@ -15,7 +16,6 @@ http://BrainpanLabs.com
    limitations under the License.
 --->
 
-<cfsilent>
 	<cfparam name="attributes.value" type="string" />
 	<cfparam name="attributes.type" type="string" default="string" />
 	<cfparam name="attributes.lang" type="string" default="" />
