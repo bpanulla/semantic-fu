@@ -181,6 +181,13 @@ http://BrainpanLabs.com
 		
 		<cfreturn variables.model.createResource( arguments.uri ) />
 	</cffunction>
+		
+
+	<cffunction name="createProperty" access="public" output="false" returntype="any">
+		<cfargument name="uri" type="string" required="true" />
+		
+		<cfreturn variables.model.createProperty( arguments.uri ) />
+	</cffunction>
 
 
 	<cffunction name="removeAll" access="public" output="false" returntype="org.panulla.semweb.Model">
