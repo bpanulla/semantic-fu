@@ -118,12 +118,13 @@ http://BrainpanLabs.com
 	<cffunction name="read" access="public" output="false" returntype="org.panulla.semweb.Model">
 		<cfargument name="path" type="string" required="true" />
 		<cfargument name="baseUri" type="string" required="true" />
+		<cfargument name="format" type="string" required="false" default="RDF/XML" />
 		
 		<cfscript>
 			var local = {};
 			local.source = fileRead( arguments.path );
 			
-			return load( local.source, arguments.baseUri );
+			return load( local.source, arguments.baseUri, arguments.format );
 		</cfscript>
 	</cffunction>
 	
@@ -141,11 +142,12 @@ http://BrainpanLabs.com
 	<cffunction name="load" access="public" output="false" returntype="org.panulla.semweb.Model">
 		<cfargument name="source" type="string" required="true" />
 		<cfargument name="baseUri" type="string" required="true" />
+		<cfargument name="format" type="string" required="false" default="RDF/XML" />
 		
 		<cfscript>
 			var local = {};
 			local.byteStream = $("java.io.ByteArrayInputStream").init(arguments.source.getBytes());			
-			variables.model.read( local.byteStream, arguments.baseUri );
+			variables.model.read( local.byteStream, arguments.baseUri, arguments.format );
 			
 			return this;
 		</cfscript>
